@@ -8,6 +8,10 @@
 	import { keyboardDisabled } from '@sudoku/stores/keyboard';
 	import { gamePaused } from '@sudoku/stores/game';
 
+
+	// import { get } from 'svelte/store';
+	import { solveSudoku } from '@sudoku/sudoku';
+
 	$: hintsAvailable = $hints > 0;
 
 	function handleHint() {
@@ -19,6 +23,21 @@
 			userGrid.applyHint($cursor);
 		}
 	}
+
+
+	function handleNextMove() {
+		for (let y = 0; y < 9; y++) {
+			for (let x = 0; x < 9; x++) {
+				if ($userGrid[y][x] === 0) {
+					const solvedSudoku = solveSudoku($userGrid);
+					userGrid.set({ x, y }, solvedSudoku[y][x]);
+					return;
+				}
+			}
+		}
+	}
+
+
 </script>
 
 <div class="action-buttons space-x-3">
@@ -52,6 +71,19 @@
 
 		<span class="badge tracking-tighter" class:badge-primary={$notes}>{$notes ? 'ON' : 'OFF'}</span>
 	</button>
+
+	<button 
+		class="btn btn-round" 
+		disabled={$gamePaused} 
+		on:click={handleNextMove}
+		title="Next Move">
+		<svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+		</svg>
+	</button>
+
+
+
 
 </div>
 
