@@ -14,6 +14,7 @@
 					candidates.clear($cursor);
 				} else {
 					candidates.add($cursor, num);
+					console.log(candidates);
 				}
 				userGrid.set($cursor, 0);
 			} else {

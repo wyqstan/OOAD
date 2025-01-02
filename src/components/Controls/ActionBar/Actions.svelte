@@ -10,7 +10,8 @@
 
 
 	// import { get } from 'svelte/store';
-	import { solveSudoku } from '@sudoku/sudoku';
+	import { solveSudoku, getCandidates } from '@sudoku/sudoku';
+	import { strategyManager } from '@sudoku/stores/StrategyManager'
 
 	$: hintsAvailable = $hints > 0;
 
@@ -35,6 +36,20 @@
 				}
 			}
 		}
+	}
+
+	function testNextMove(){
+	    let candidatesList = strategyManager.applyStrategies($userGrid);
+	    for(let row = 0; row < 9; row++) {
+	        for(let col = 0; col < 9; col++) {
+                candidates.clear({x: col, y: row});
+                if($userGrid[row][col] === 0) {
+                    candidatesList[row][col].forEach((num) => {
+                    candidates.add({x: col, y: row}, num);
+                    });
+                }
+	        }
+	    }
 	}
 
 
@@ -75,7 +90,7 @@
 	<button 
 		class="btn btn-round" 
 		disabled={$gamePaused} 
-		on:click={handleNextMove}
+		on:click={testNextMove}
 		title="Next Move">
 		<svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
