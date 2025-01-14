@@ -6,7 +6,7 @@
 	import { candidates } from '@sudoku/stores/candidates';
 	import { modal } from '@sudoku/stores/modal';
 	import { strategyManager } from '@sudoku/sudokuStrategies/StrategyManager';
-	import { StackManager, SetValueCommand, ResetCommand, SetNoteCommand, copyUserGrid, copyCandidates } from './ActionBar/Resetstack'
+    import { ResetTree, copyUserGrid, gridSerialization } from '@sudoku/Resettree'
 
     export let number;
     $: disabled = false;
@@ -26,7 +26,7 @@
     function handleKeyButton(num) {
         if (!$keyboardDisabled) {
             if ($notes) {
-                StackManager.pushCmd(new SetNoteCommand(copyUserGrid($userGrid), copyCandidates($candidates), num, {'x': $cursor.x, 'y': $cursor.y}));
+                //StackManager.pushCmd(new SetNoteCommand(copyUserGrid($userGrid), copyCandidates($candidates), num, {'x': $cursor.x, 'y': $cursor.y}));
                 if (num === 0) {
                     candidates.clear($cursor);
                 } else {
@@ -41,27 +41,31 @@
                     return;
                 }
 
-                if (StackManager.hasResetPoint()) {
+                if (ResetTree.hasResetPoint()) {
                     let tempGrid = copyUserGrid($userGrid);
                     tempGrid[$cursor.y][$cursor.x] = num;
                     if (!hasSolution(tempGrid)) {
                         modal.show('nosolution');
+                        ResetTree.setFailure();
                         return;
                     }
                 }
 
-                if ($candidates.hasOwnProperty($cursor.x + ',' + $cursor.y) && $candidates[$cursor.x + ',' + $cursor.y].length > 1) {
-                    StackManager.pushCmd(new ResetCommand(copyUserGrid($userGrid), copyCandidates($candidates), num, {'x': $cursor.x, 'y': $cursor.y}));
-                }
-                else {
-                    StackManager.pushCmd(new SetValueCommand(copyUserGrid($userGrid), copyCandidates($candidates), num, {'x': $cursor.x, 'y': $cursor.y}));
-                }
 
                 if ($candidates.hasOwnProperty($cursor.x + ',' + $cursor.y)) {
                     candidates.clear($cursor);
                 }
 
                 userGrid.set($cursor, num);
+
+                if ($candidates.hasOwnProperty($cursor.x + ',' + $cursor.y) && $candidates[$cursor.x + ',' + $cursor.y].length > 1) {
+                    //StackManager.pushCmd(new ResetCommand(copyUserGrid($userGrid), copyCandidates($candidates), num, {'x': $cursor.x, 'y': $cursor.y}));
+                    ResetTree.push(num, gridSerialization($userGrid), true);
+                }
+                else {
+                    //StackManager.pushCmd(new SetValueCommand(copyUserGrid($userGrid), copyCandidates($candidates), num, {'x': $cursor.x, 'y': $cursor.y}));
+                    ResetTree.push(num, gridSerialization($userGrid));
+                }
             }
         }
     }
