@@ -61,7 +61,6 @@ body {
 	@apply bg-primary-darker;
 }
 
-
 .icon-outline {
 	@apply h-6 inline;
 }

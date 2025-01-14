@@ -8,6 +8,7 @@
 	import { keyboardDisabled } from '@sudoku/stores/keyboard';
 	import { gamePaused } from '@sudoku/stores/game';
 	import { StackManager } from './Resetstack'
+	import { strategyDisplay } from '@sudoku/stores/strategyShow'
 
 	import { strategyManager } from '@sudoku/sudokuStrategies/StrategyManager'
     import { ResetTree } from '@sudoku/Resettree';
@@ -20,12 +21,16 @@
     	    for(let col = 0; col < 9; col++) {
                 candidates.clear({x: col, y: row});
                 if($userGrid[row][col] === 0) {
-                    candidatesList[row][col].forEach((num) => {
+                    candidatesList["final candidate"][row][col].forEach((num) => {
                     candidates.add({x: col, y: row}, num);
                     });
                 }
     	    }
     	}
+        let strategyList = Object.keys(candidatesList);
+        strategyList.pop();
+    	strategyDisplay.set(strategyList.join('->'));
+
     }
 
 	function handleUndo() {

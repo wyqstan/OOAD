@@ -8,6 +8,7 @@
 	import Controls from './components/Controls/index.svelte';
 	import Header from './components/Header/index.svelte';
 	import Modal from './components/Modal/index.svelte';
+	import StrategyShow from './components/Board/StrategyShow.svelte';
 
 	gameWon.subscribe(won => {
 		if (won) {
@@ -40,6 +41,10 @@
 <!-- Sudoku Field -->
 <section>
 	<Board />
+</section>
+
+<section>
+	<StrategyShow/>
 </section>
 
 <!-- Keyboard -->
